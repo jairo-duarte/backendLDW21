@@ -11,6 +11,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+
+/**
+ *  Esta classe usa o padrão DAO para acessar o banco de dados. Juntamente com JdbcTemplate, uma forma antiga e menos automatizada de acessar o banco de dados.
+ */
 @Service
 public class UserDAO {
 
