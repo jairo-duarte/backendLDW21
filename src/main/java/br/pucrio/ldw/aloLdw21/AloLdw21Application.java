@@ -25,6 +25,7 @@ public class AloLdw21Application {
 			userRepository.deleteAll();
 			commentRepository.deleteAll();
 			postRepository.deleteAll();
+
 			User user = new User();
 			user.setUsername("loginUser1");
 			user.setName("fulano");
@@ -34,6 +35,11 @@ public class AloLdw21Application {
 			Post post = new Post(user.getId(), "Post 1", "This is the first post");
 			postRepository.save(post);
 			Comment comment = new Comment(post, "john doe 1","john@doe.com", "This is the first comment");
+			commentRepository.save(comment);
+
+			post = new Post(user.getId(), "Post 2", "This is the second post");
+			postRepository.save(post);
+			comment = new Comment(post, "john doe 1","john@doe.com", "This is the second comment");
 			commentRepository.save(comment);
 
 		};

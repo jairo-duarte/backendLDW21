@@ -1,5 +1,7 @@
 package br.pucrio.ldw.aloLdw21.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
@@ -20,6 +22,8 @@ public class Post {
     private String body;
     @OneToMany(mappedBy="post")
     private Set<Comment> comments;
+    @ColumnDefault("1")
+    private Boolean publico = true;
 
 
     public Post(Long userId, String title, String body) {
@@ -70,5 +74,13 @@ public class Post {
 
     public void setComments(Set<Comment> comments) {
         this.comments = comments;
+    }
+
+    public Boolean getPublico() {
+        return publico;
+    }
+
+    public void setPublico(Boolean publico) {
+        this.publico = publico;
     }
 }

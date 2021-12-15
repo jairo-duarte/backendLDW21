@@ -1,4 +1,4 @@
-package br.pucrio.ldw.aloLdw21.web;
+package br.pucrio.ldw.aloLdw21.model.web;
 
 import java.util.Map;
 

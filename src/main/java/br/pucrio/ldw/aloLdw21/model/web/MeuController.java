@@ -1,20 +1,19 @@
-package br.pucrio.ldw.aloLdw21.web;
+package br.pucrio.ldw.aloLdw21.model.web;
 
+import java.util.Optional;
 import java.util.Set;
 
 import br.pucrio.ldw.aloLdw21.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.pucrio.ldw.aloLdw21.exception.RegraDeNegocioException;
 import br.pucrio.ldw.aloLdw21.service.Animal;
 
 @RestController
+@CrossOrigin(origins = "*",methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.PUT,RequestMethod.PATCH})
 public class MeuController {
 
 	private final Animal myPet;
@@ -22,7 +21,7 @@ public class MeuController {
 	private final CommentRepository commentRepository;
 	private final UserDAO userDAO;
 
-	public MeuController(@Autowired Animal myPet, PostRepository postRepository, CommentRepository commentRepository, UserDAO userDAO) {
+	public MeuController(Animal myPet, PostRepository postRepository, CommentRepository commentRepository, UserDAO userDAO) {
 		this.myPet = myPet;
 		this.postRepository = postRepository;
 		this.commentRepository = commentRepository;
@@ -55,14 +54,43 @@ public class MeuController {
 
 
 	@GetMapping("/posts/{postId}/comments")
-	public ResponseEntity getPostComments2(@RequestParam(name = "postId",required = false) Long postId) {
+	public ResponseEntity getPostComments2(@PathVariable(name = "postId",required = true) Long postId) {
 		if(postId == null)
-			return ResponseEntity.ok()
-					.header("headerAdicional", "valorExtra")
-					.body( commentRepository.findBy(CommentInfo.class));
+			return ResponseEntity.badRequest().build();
 		else return ResponseEntity.ok(commentRepository.findAllByPostId(postId));
-
 	}
+
+	@GetMapping("/posts/{postId}")
+	public ResponseEntity getPost(@PathVariable(name = "postId",required = true) Long postId) {
+		Optional<PostInfo> postOP = postRepository.findById(PostInfo.class,postId);
+		if(postOP.isPresent()){
+			return ResponseEntity.ok(postOP.get());
+		}else{
+			return ResponseEntity.notFound().build();
+		}
+	}
+
+	@PutMapping("/posts/{postId}")
+	public ResponseEntity updatePost(@PathVariable(name = "postId",required = true) Long postId,@RequestBody Post post){
+		Optional<Post> postOP = postRepository.findById(postId);
+		if(postOP.isPresent()){
+			return ResponseEntity.ok(postRepository.save(post));
+		}else{
+			return ResponseEntity.notFound().build();
+		}
+	}
+
+	@PostMapping("/posts")
+	public ResponseEntity createPost(@RequestBody Post post) {
+		try {
+			postRepository.save(post);
+			return ResponseEntity.ok(post);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+
 
 	@GetMapping("/posts")
 	public ResponseEntity getPosts() {
