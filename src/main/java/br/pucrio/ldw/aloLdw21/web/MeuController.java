@@ -1,11 +1,11 @@
 package br.pucrio.ldw.aloLdw21.web;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import br.pucrio.ldw.aloLdw21.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import br.pucrio.ldw.aloLdw21.model.DAO.UserDAO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,7 +46,7 @@ public class MeuController {
 		} else if ("gato".equalsIgnoreCase(tipo)) {
 			return "Miau";
 		} else {
-			return "Não sei o que fazer";
+			return "Não sei o que fazer!!";
 		}
 
 	}
@@ -80,9 +80,49 @@ public class MeuController {
 		}
 	}
 
+	@PatchMapping("/posts/{postId}")
+	public ResponseEntity patchPost(@PathVariable(name = "postId",required = false) Long postId,@RequestBody Map<String,Object> updates) {
+		if(postId == null && updates.containsKey("id")) {
+			postId = (Long) updates.get("id");
+		}else return ResponseEntity.badRequest().build();
+
+		Optional<Post> postOP = postRepository.findById(postId);
+		if(postOP.isPresent()){
+			Post post = postOP.get();
+			if(updates.containsKey("title")){
+				post.setTitle(updates.get("title").toString());
+			}
+			if(updates.containsKey("body")){
+				post.setBody(updates.get("body").toString());
+			}
+			final Post savedPost = postRepository.save(post);
+			PostInfo postInfo = new PostInfo() {
+				@Override
+				public Long getId() {
+					return savedPost.getId();
+				}
+				@Override
+				public String getTitle() {
+					return savedPost.getTitle();
+				}
+				@Override
+				public String getBody() {
+					return savedPost.getBody();
+				}
+			};
+			return ResponseEntity.ok(postInfo);
+		}else{
+			return ResponseEntity.notFound().build();
+		}
+	}
+
+
+
 	@PostMapping("/posts")
 	public ResponseEntity createPost(@RequestBody Post post) {
 		try {
+			if(post.getId() != null)
+				return ResponseEntity.badRequest().build();
 			postRepository.save(post);
 			return ResponseEntity.ok(post);
 		} catch (Exception e) {

@@ -1,5 +1,7 @@
-package br.pucrio.ldw.aloLdw21.model;
+package br.pucrio.ldw.aloLdw21.model.DAO;
 
+import br.pucrio.ldw.aloLdw21.model.Post;
+import br.pucrio.ldw.aloLdw21.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -22,6 +25,22 @@ public class UserDAO {
 
     public UserDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Optional<User> getUserByNameUnsafe(String name) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT id,name,username,email FROM user WHERE name = '" + name + "'", new UserMapper()));
+        } catch (org.springframework.dao.EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<User> getUserByNameSafe(String name) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT id,name,username,email FROM user WHERE name = ?", new UserMapper(),name));
+        } catch (org.springframework.dao.EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
 

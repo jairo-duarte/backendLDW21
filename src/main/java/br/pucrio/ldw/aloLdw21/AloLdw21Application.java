@@ -1,6 +1,7 @@
 package br.pucrio.ldw.aloLdw21;
 
 import br.pucrio.ldw.aloLdw21.model.*;
+import br.pucrio.ldw.aloLdw21.service.Animal;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
@@ -33,6 +34,7 @@ public class AloLdw21Application {
 			userRepository.save(user);
 
 			Post post = new Post(user.getId(), "Post 1", "This is the first post");
+			post.setPublico(false);
 			postRepository.save(post);
 			Comment comment = new Comment(post, "john doe 1","john@doe.com", "This is the first comment");
 			commentRepository.save(comment);

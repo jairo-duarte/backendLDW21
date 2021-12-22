@@ -22,7 +22,8 @@ public class Post {
     private String body;
     @OneToMany(mappedBy="post")
     private Set<Comment> comments;
-    @ColumnDefault("1")
+
+    @Column(nullable = true)
     private Boolean publico = true;
 
 
